@@ -1,3 +1,8 @@
+data "aws_acm_certificate" "co777" {
+  domain   = "*.suuu.pw"
+  statuses = ["ISSUED"]
+}
+
 resource "aws_lb" "co777-alb" {
   name               = "${var.tag_name}-alb"
   internal           = false
@@ -32,13 +37,28 @@ resource "aws_lb_target_group" "co777-albtg" {
   }
 }
 
-resource "aws_lb_listener" "co777-alblis" {
+resource "aws_lb_listener" "co777-alblis-re" {
   load_balancer_arn = aws_lb.co777-alb.arn
   port              = var.port_web
   protocol          = var.protocol_http
 
   default_action {
-    type             = var.lis_action
+    type = var.lis_action_re
+    redirect {
+      port        = var.port_https
+      protocol    = var.protocol_https
+      status_code = var.status_code
+    }
+  }
+}
+
+resource "aws_lb_listener" "co777-alblis-fo" {
+  load_balancer_arn = aws_lb.co777-alb.arn
+  port              = var.port_https
+  protocol          = var.protocol_https
+  certificate_arn   = data.aws_acm_certificate.co777.arn
+  default_action {
+    type             = var.lis_action_fo
     target_group_arn = aws_lb_target_group.co777-albtg.arn
   }
 }
@@ -84,7 +104,7 @@ resource "aws_lb_listener" "co777-nlbli" {
   protocol          = var.protocol_tcp
 
   default_action {
-    type             = var.lis_action
+    type             = var.lis_action_fo
     target_group_arn = aws_lb_target_group.co777-nlbtg.arn
   }
 }

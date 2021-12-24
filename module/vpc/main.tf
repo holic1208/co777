@@ -47,6 +47,10 @@ resource "aws_subnet" "subnet_cont" {
   vpc_id            = aws_vpc.co777-vpc.id
   cidr_block        = var.cidr_private_cont
   availability_zone = "${var.region}${var.ava_zone[0]}"
+
+  tags = {
+    Name = "${var.tag_name}_cont"
+  }
 }
 
 # db subnet 

@@ -1,7 +1,3 @@
-output "alb-dns" {
-  value = "aws_lb.${var.tag_name}-alb.dns_name"
-}
-
-output "nlb-dns" {
-  value = "aws_lb.${var.tag_name}-nlb.dns_name"
+output "as_web_target" {
+  value = aws_lb_target_group.co777-albtg.arn
 }

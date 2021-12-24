@@ -46,6 +46,10 @@ variable "protocol_http" {
   type = string
 }
 
+variable "protocol_https" {
+  type = string
+}
+
 variable "timeout" {
   type = string
 }
@@ -62,7 +66,15 @@ variable "port_was" {
   type = number
 }
 
-variable "lis_action" {
+variable "port_https" {
+  type = string
+}
+
+variable "lis_action_re" {
+  type = string
+}
+
+variable "lis_action_fo" {
   type = string
 }
 
@@ -94,3 +106,6 @@ variable "instance_wasb_ip" {
   type = string
 }
 
+variable "status_code" {
+  type = string
+}

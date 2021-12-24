@@ -1,35 +1,26 @@
-resource "aws_ami_from_instance" "co777-ami-web" {
-  name               = "${var.tag_name}-ami-web"
-  source_instance_id = aws_instance.co777-weba.id
+data "aws_ami" "ami-web" {
+  owners = ["self"]
 
-  depends_on = [
-    aws_instance.co777-weba
-  ]
-
-  tags = {
-    "Name" = "${var.tag_name}_ami_web"
+  filter {
+    name   = "tag:Name"
+    values = ["WEB"]
   }
 }
 
-resource "aws_ami_from_instance" "co777-ami-was" {
-  name               = "${var.tag_name}-ami-was"
-  source_instance_id = aws_instance.co777-wasa.id
+data "aws_ami" "ami-was" {
+  owners = ["self"]
 
-  depends_on = [
-    aws_instance.co777-wasa
-  ]
-
-  tags = {
-    "Name" = "${var.tag_name}_ami_was"
+  filter {
+    name   = "tag:Name"
+    values = ["WAS"]
   }
 }
-
 
 resource "aws_launch_configuration" "co777-aslc-web" {
-  name            = "${var.tag_name}-web"
-  image_id        = aws_ami_from_instance.co777-ami-web.id
-  instance_type   = var.webinst_type
-  security_groups = [aws_security_group.co777-sg-Web.id]
+  name            = "${var.tag_as_name}-web"
+  image_id        = data.aws_ami.ami-web.id
+  instance_type   = var.web_ec2_type
+  security_groups = [var.security_Web_id]
   key_name        = var.key_name
 
   lifecycle {
@@ -38,10 +29,10 @@ resource "aws_launch_configuration" "co777-aslc-web" {
 }
 
 resource "aws_launch_configuration" "co777-aslc-was" {
-  name            = "${var.tag_name}-was"
-  image_id        = aws_ami_from_instance.co777-ami-was.id
-  instance_type   = var.wasinst_type
-  security_groups = [aws_security_group.co777-sg-WAS.id]
+  name            = "${var.tag_as_name}-was"
+  image_id        = data.aws_ami.ami-was.id
+  instance_type   = var.was_ec2_type
+  security_groups = [var.security_WAS_id]
   key_name        = var.key_name
 
   lifecycle {
@@ -49,51 +40,47 @@ resource "aws_launch_configuration" "co777-aslc-was" {
   }
 }
 
-
 resource "aws_autoscaling_group" "co777-asg-web" {
-  name                      = "${var.tag_name}-asg-web"
-  min_size                  = 2
-  max_size                  = 10
-  desired_capacity          = 2
-  health_check_grace_period = 10
-  health_check_type         = "EC2"
-  force_delete              = true
-  launch_configuration      = aws_launch_configuration.co777-aslc-web.name
-  vpc_zone_identifier       = aws_subnet.subnet_web[*].id
+  name                 = "${var.tag_as_name}-asg-web"
+  min_size             = var.as_min_size
+  max_size             = var.as_max_size
+  desired_capacity     = var.desired_capacity
+  health_check_type    = var.health_type
+  force_delete         = true
+  launch_configuration = aws_launch_configuration.co777-aslc-web.name
+  vpc_zone_identifier  = var.subnet_web
 
   tags = [
     {
       key                 = "Name"
-      value               = var.as_inst_web
+      value               = var.as_web_name
       propagate_at_launch = true
     }
   ]
 }
 
 resource "aws_autoscaling_group" "co777-asg-was" {
-  name                      = "${var.tag_name}-asg-was"
-  min_size                  = 2
-  max_size                  = 10
-  desired_capacity          = 2
-  health_check_grace_period = 10
-  health_check_type         = "EC2"
-  force_delete              = true
-  launch_configuration      = aws_launch_configuration.co777-aslc-was.name
-  vpc_zone_identifier       = aws_subnet.subnet_was[*].id
+  name                 = "${var.tag_as_name}-asg-was"
+  min_size             = var.as_min_size
+  max_size             = var.as_max_size
+  desired_capacity     = var.desired_capacity
+  health_check_type    = var.health_type
+  force_delete         = true
+  launch_configuration = aws_launch_configuration.co777-aslc-was.name
+  vpc_zone_identifier  = var.subnet_was
 
   tags = [
     {
       key                 = "Name"
-      value               = var.as_inst_was
+      value               = var.as_was_name
       propagate_at_launch = true
     }
   ]
 }
 
-
 resource "aws_autoscaling_attachment" "co777-asg-att-web" {
   autoscaling_group_name = aws_autoscaling_group.co777-asg-web.id
-  alb_target_group_arn   = aws_lb_target_group.co777-albtg.arn
+  alb_target_group_arn   = var.as_web_target
 }
 
 resource "aws_autoscaling_attachment" "co777-asg-att-was" {

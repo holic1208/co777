@@ -2,6 +2,17 @@ provider "aws" {
   region = "ap-northeast-2"
 }
 
+terraform {
+  backend "s3" {
+    bucket = "co777-final-pro"
+    key    = "final-state/terraform.tfstate"
+    region = "ap-northeast-2"
+
+    dynamodb_table = "co777-final-dynamo"
+    encrypt        = true
+  }
+}
+
 
 
 
@@ -145,26 +156,62 @@ module "LB" {
   instance_wasb_ip = module.EC2.instance_wasc_ip
   subnet_web       = module.VPC.subnet_web
   ##
-  tag_name     = "co777"
-  port_traffic = "traffic-port"
-  lis_action   = "forward"
+  tag_name      = "co777"
+  port_traffic  = "traffic-port"
+  lis_action_fo = "forward"
+  lis_action_re = "redirect"
+  status_code   = "HTTP_301"
 
   #alb
+
   health_path         = "/health.html"
   alb_type            = "application"
   port_web            = 80
+  port_https          = 443
   protocol_http       = "HTTP"
+  protocol_https      = "HTTPS"
   healthy_threshold   = 3
   interval            = 5
   matcher             = "200"
   timeout             = 2
   unhealthy_threshold = 2
 
+
+
   #nlb
   nlb_type        = "network"
   port_was        = 8080
   protocol_tcp    = "TCP"
   nlb_target_type = "ip"
+}
+
+
+
+
+#######################################################
+## Auto Scaling                                      ##
+#######################################################
+
+module "ASG" {
+  source = "./module/as"
+
+  ##
+  key_name        = module.Key-pair.key_name
+  security_Web_id = module.EC2.security_Web_id
+  security_WAS_id = module.EC2.security_WAS_id
+  subnet_web      = module.VPC.subnet_web
+  subnet_was      = module.VPC.subnet_was
+  as_web_target   = module.LB.as_web_target
+  ##
+  tag_as_name      = "co777"
+  as_web_name      = "co777_auto_web"
+  as_was_name      = "co777_auto_was"
+  web_ec2_type     = "t2.micro"
+  was_ec2_type     = "t2.small"
+  as_min_size      = 2
+  as_max_size      = 10
+  desired_capacity = 2
+  health_type      = "EC2"
 }
 
 
@@ -191,12 +238,5 @@ module "RDS" {
   username     = "co777"
   identifier   = "co777mysql"
   password     = "co777!!!"
-  db_name      = "co777Mysql"
+  db_name      = "petclinic"
 }
-
-
-
-
-#######################################################
-## Auto Scaling                                      ##
-#######################################################

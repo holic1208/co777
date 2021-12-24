@@ -1,34 +1,68 @@
-variable "strategy" {
-  type    = string
-  default = "cluster"
+variable "tag_as_name" {
+  type = string
 }
 
-variable "tag_name" {
+# variable "instance_weba_id" {
+#   type = string
+# }
+
+# variable "instance_wasa_id" {
+#   type = string
+# }
+
+variable "security_Web_id" {
   type = string
-  # default = "co777"
 }
 
-variable "as_inst_web" {
+variable "security_WAS_id" {
   type = string
-  # "co777_auto_web"
 }
 
-variable "as_inst_was" {
+variable "subnet_web" {
+  type = list(string)
+}
+
+variable "subnet_was" {
+  type = list(string)
+}
+
+variable "as_web_target" {
   type = string
-  # "co777_auto_WAS"
 }
 
 variable "key_name" {
   type = string
-  #default = "final-co777"
+  #
 }
 
-variable "webinst_type" {
+variable "as_web_name" {
   type = string
-  #default = "t2.micro"
 }
 
-variable "wasinst_type" {
+variable "as_was_name" {
   type = string
-  #default = "t2.small"
+}
+
+variable "web_ec2_type" {
+  type = string
+}
+
+variable "was_ec2_type" {
+  type = string
+}
+
+variable "as_min_size" {
+  type = number
+}
+
+variable "as_max_size" {
+  type = number
+}
+
+variable "desired_capacity" {
+  type = number
+}
+
+variable "health_type" {
+  type = string
 }
