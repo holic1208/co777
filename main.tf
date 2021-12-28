@@ -152,8 +152,8 @@ module "LB" {
   instance_webc_id = module.EC2.instance_webc_id
   security_ALB_id  = module.EC2.security_ALB_id
   subnet_pub       = module.VPC.subnet_pub
-  instance_wasa_ip = module.EC2.instance_wasa_ip
-  instance_wasb_ip = module.EC2.instance_wasc_ip
+  instance_wasa_id = module.EC2.instance_wasa_id
+  instance_wasb_id = module.EC2.instance_wasc_id
   subnet_web       = module.VPC.subnet_web
   ##
   tag_name      = "co777"
@@ -162,9 +162,9 @@ module "LB" {
   lis_action_re = "redirect"
   status_code   = "HTTP_301"
 
-  #alb
 
-  health_path         = "/health.html"
+  #alb
+  health_path         = "/"
   alb_type            = "application"
   port_web            = 80
   port_https          = 443
@@ -177,12 +177,10 @@ module "LB" {
   unhealthy_threshold = 2
 
 
-
   #nlb
-  nlb_type        = "network"
-  port_was        = 8080
-  protocol_tcp    = "TCP"
-  nlb_target_type = "ip"
+  nlb_type     = "network"
+  port_was     = 8080
+  protocol_tcp = "TCP"
 }
 
 
@@ -202,6 +200,7 @@ module "ASG" {
   subnet_web      = module.VPC.subnet_web
   subnet_was      = module.VPC.subnet_was
   as_web_target   = module.LB.as_web_target
+  as_was_target   = module.LB.as_was_target
   ##
   tag_as_name      = "co777"
   as_web_name      = "co777_auto_web"
@@ -212,6 +211,8 @@ module "ASG" {
   as_max_size      = 10
   desired_capacity = 2
   health_type      = "EC2"
+  plan_namespace   = "autoscaling"
+  plan_value       = "60"
 }
 
 

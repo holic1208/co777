@@ -87,11 +87,10 @@ resource "aws_lb" "co777-nlb" {
 }
 
 resource "aws_lb_target_group" "co777-nlbtg" {
-  name        = "${var.tag_name}-nlbtg"
-  port        = var.port_was
-  protocol    = var.protocol_tcp
-  target_type = var.nlb_target_type
-  vpc_id      = var.vpc_id
+  name     = "${var.tag_name}-nlbtg"
+  port     = var.port_was
+  protocol = var.protocol_tcp
+  vpc_id   = var.vpc_id
 
   tags = {
     Name = "${var.tag_name}_nlbtg"
@@ -111,12 +110,10 @@ resource "aws_lb_listener" "co777-nlbli" {
 
 resource "aws_lb_target_group_attachment" "co777-nlbtg-att1" {
   target_group_arn = aws_lb_target_group.co777-nlbtg.arn
-  target_id        = var.instance_wasa_ip
-  port             = var.port_was
+  target_id        = var.instance_wasa_id
 }
 
 resource "aws_lb_target_group_attachment" "co777-nlbtg-att2" {
   target_group_arn = aws_lb_target_group.co777-nlbtg.arn
-  target_id        = var.instance_wasb_ip
-  port             = var.port_was
+  target_id        = var.instance_wasb_id
 }

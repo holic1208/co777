@@ -2,14 +2,6 @@ variable "tag_as_name" {
   type = string
 }
 
-# variable "instance_weba_id" {
-#   type = string
-# }
-
-# variable "instance_wasa_id" {
-#   type = string
-# }
-
 variable "security_Web_id" {
   type = string
 }
@@ -30,9 +22,12 @@ variable "as_web_target" {
   type = string
 }
 
+variable "as_was_target" {
+  type = string
+}
+
 variable "key_name" {
   type = string
-  #
 }
 
 variable "as_web_name" {
@@ -64,5 +59,13 @@ variable "desired_capacity" {
 }
 
 variable "health_type" {
+  type = string
+}
+
+variable "plan_namespace" {
+  type = string
+}
+
+variable "plan_value" {
   type = string
 }

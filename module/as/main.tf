@@ -78,6 +78,61 @@ resource "aws_autoscaling_group" "co777-asg-was" {
   ]
 }
 
+resource "aws_autoscalingplans_scaling_plan" "co777-plan-web" {
+  name = "co777-web-plan"
+
+  application_source {
+    tag_filter {
+      key    = "Name"
+      values = [var.as_web_name]
+    }
+  }
+
+  scaling_instruction {
+    max_capacity       = var.as_max_size
+    min_capacity       = var.as_min_size
+    resource_id        = format("autoScalingGroup/%s", aws_autoscaling_group.co777-asg-web.name)
+    scalable_dimension = "autoscaling:autoScalingGroup:DesiredCapacity"
+    service_namespace  = var.plan_namespace
+
+    target_tracking_configuration {
+      predefined_scaling_metric_specification {
+        predefined_scaling_metric_type = "ASGAverageCPUUtilization"
+      }
+
+      target_value = var.plan_value
+    }
+  }
+}
+
+resource "aws_autoscalingplans_scaling_plan" "co777-plan-was" {
+  name = "co777-was-plan"
+
+  application_source {
+    tag_filter {
+      key    = "Name"
+      values = [var.as_was_name]
+    }
+  }
+
+  scaling_instruction {
+    max_capacity       = var.as_max_size
+    min_capacity       = var.as_min_size
+    resource_id        = format("autoScalingGroup/%s", aws_autoscaling_group.co777-asg-was.name)
+    scalable_dimension = "autoscaling:autoScalingGroup:DesiredCapacity"
+    service_namespace  = var.plan_namespace
+
+
+    target_tracking_configuration {
+      predefined_scaling_metric_specification {
+        predefined_scaling_metric_type = "ASGAverageCPUUtilization"
+      }
+
+      target_value = var.plan_value
+    }
+  }
+}
+
 resource "aws_autoscaling_attachment" "co777-asg-att-web" {
   autoscaling_group_name = aws_autoscaling_group.co777-asg-web.id
   alb_target_group_arn   = var.as_web_target
@@ -85,4 +140,5 @@ resource "aws_autoscaling_attachment" "co777-asg-att-web" {
 
 resource "aws_autoscaling_attachment" "co777-asg-att-was" {
   autoscaling_group_name = aws_autoscaling_group.co777-asg-was.id
+  alb_target_group_arn   = var.as_was_target
 }

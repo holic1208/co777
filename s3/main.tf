@@ -27,6 +27,29 @@ resource "aws_s3_bucket" "co777-state-file-bucket" {
   }
 }
 
+resource "aws_s3_bucket" "co777-state-file-bucket2" {
+  bucket = "co777-final-logs"
+
+  tags = {
+    Name = "${var.tag_s3_name}_logs_bucket"
+  }
+
+  lifecycle {
+    prevent_destroy = false
+  }
+
+  versioning {
+    enabled = true
+  }
+
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
+}
 
 #dynamodb
 resource "aws_dynamodb_table" "terraform_locks" {

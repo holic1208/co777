@@ -28,10 +28,6 @@ output "instance_wasa_id" {
   value = aws_instance.co777-wasa.id
 }
 
-output "instance_wasa_ip" {
-  value = aws_instance.co777-wasa.private_ip
-}
-
-output "instance_wasc_ip" {
-  value = aws_instance.co777-wasc.private_ip
+output "instance_wasc_id" {
+  value = aws_instance.co777-wasc.id
 }

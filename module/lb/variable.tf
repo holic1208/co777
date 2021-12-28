@@ -90,19 +90,15 @@ variable "nlb_type" {
   type = string
 }
 
-variable "nlb_target_type" {
-  type = string
-}
-
 variable "protocol_tcp" {
   type = string
 }
 
-variable "instance_wasa_ip" {
+variable "instance_wasa_id" {
   type = string
 }
 
-variable "instance_wasb_ip" {
+variable "instance_wasb_id" {
   type = string
 }
 
